@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">FantaCalcioManager</string>
+
+
+    <string-array name="order_filter_array">
+        <item name="Portiere">Portiere</item>
+        <item name="Difensore">Difensore</item>
+        <item name="Centrocampista">Centrocampista</item>
+        <item name="Attaccante">Attaccante</item>
+    </string-array>
+
+    <string-array name="order_filter_array2">
+        <item name="Buffon">Buffon</item>
+        <item name="Sirigu">Sirigu</item>
+
+    </string-array>
+
+    <string-array name="order_filter_array3">
+        <item name="FinandoTeam">FinandoTeam</item>
+        <item name="OcchiVerdi">OcchiVerdi</item>
+
+    </string-array>
+</resources>
