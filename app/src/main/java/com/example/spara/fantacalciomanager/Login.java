@@ -208,11 +208,29 @@ public class Login extends AppCompatActivity
                         v.startAnimation(animation1);                    }
                 });
 
-                Intent I = new Intent(Login.this, MainActivity.class);
-                I.putExtra("Crediti", Crediti);
-                startActivity(I);
-                Login.this.finish();
+                if(arraySocieta.size() > 0) {
+                    String Line = "";
+                    for (int k = 0; k < arraySocieta.size(); k++) {
+                        Line = Line + arraySocieta.get(k);
+                        if (k < arraySocieta.size() - 1)
+                            Line = Line + "\n";
+                    }
 
+                    FileHelper.saveToFile(Line, "Societa.txt", false);
+
+                    Crediti = Integer.valueOf(editCrediti.getText().toString());
+
+
+                    Intent I = new Intent(Login.this, MainActivity.class);
+                    I.putExtra("Crediti", Crediti);
+                    startActivity(I);
+                    Login.this.finish();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Deve esserci almeno 1 Societa per partecipare all'asta", Toast.LENGTH_LONG).show();
+
+                }
             }
         });
 

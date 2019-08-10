@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        Crediti = getIntent().getIntExtra("Crediti", 0);
+        System.out.println(Crediti);
 
         btn_save = findViewById(R.id.btn_save);
         btn_skip = findViewById(R.id.btn_skip);
@@ -111,6 +113,8 @@ public class MainActivity extends AppCompatActivity
 
         ImageView imgTransparent = findViewById(R.id.imageView);
         imgTransparent.setAlpha(230);
+
+        deleteGiocatore.setVisibility(View.INVISIBLE);
 
 
         Spinner spChangeRuolo = (Spinner) findViewById(R.id.sp_change_ruolo);
@@ -155,7 +159,7 @@ public class MainActivity extends AppCompatActivity
             }else {
 
                 // Save email_public.txt file to /storage/emulated/0/DCIM folder
-                Toast.makeText(getApplicationContext(), "Save to public external storage success. File Path ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Save to public external storage success. File Path ", Toast.LENGTH_LONG).show();
 
 
                 List<String> Societa = FileHelper.ReadFileOutArray(MainActivity.this, "Societa.txt");
@@ -212,6 +216,9 @@ public class MainActivity extends AppCompatActivity
                 System.out.println(selectedItem);
                 lastSocietaSelected = selectedItem;
 
+                refreshSquad(selectedItem);
+
+                /*
                 List<String> Squadra = FileHelper.ReadFileOutArray(MainActivity.this, selectedItem+".txt");
 
                 ArrayList<String> Portieri = new ArrayList<>();
@@ -274,7 +281,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 listSquadra.setAdapter(adapter);
-
+                */
 
 
             }
@@ -290,6 +297,7 @@ public class MainActivity extends AppCompatActivity
                 lastGiocatoreSelected = selectedItem;
                 PoslastGiocatoreSelected = position;
 
+                deleteGiocatore.setVisibility(View.VISIBLE);
 
 
             }
@@ -302,7 +310,7 @@ public class MainActivity extends AppCompatActivity
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
 
-                Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
 
                 String FileName = "";
                 List<String> Giocatori;
@@ -414,39 +422,47 @@ public class MainActivity extends AppCompatActivity
                 } else if (RuoloSelected.equals("Attaccante")) {
                     Ruolo = "A";
                 }
-                String line = Giocatore + "-" + Ruolo + "-" + Costo;
-                FileHelper.saveToFile(line, SquadraSelected + ".txt", true);
+
+                if(canAdd(SquadraSelected, Ruolo)) {
+
+                    String line = Giocatore + "-" + Ruolo + "-" + Costo;
+                    FileHelper.saveToFile(line, SquadraSelected + ".txt", true);
 
 
-                updateSquadInfo();
+                    updateSquadInfo();
 
-                List<String> Giocatori = null;
+                    List<String> Giocatori = null;
 
-                if (RuoloSelected.equals("Portiere")) {
-                    arrayPortieriDeleted.add(arrayPortieri.get(spChangeGiocatore.getSelectedItemPosition()));
-                    arrayPortieri.remove(spChangeGiocatore.getSelectedItemPosition());
-                    Giocatori = arrayPortieri;
-                } else if (RuoloSelected.equals("Difensore")) {
-                    arrayDifensoriDeleted.add(arrayDifensori.get(spChangeGiocatore.getSelectedItemPosition()));
-                    arrayDifensori.remove(spChangeGiocatore.getSelectedItemPosition());
-                    Giocatori = arrayDifensori;
-                } else if (RuoloSelected.equals("Centrocampista")) {
-                    arrayCentrocampistiDeleted.add(arrayCentrocampisti.get(spChangeGiocatore.getSelectedItemPosition()));
-                    arrayCentrocampisti.remove(spChangeGiocatore.getSelectedItemPosition());
-                    Giocatori = arrayCentrocampisti;
-                } else if (RuoloSelected.equals("Attaccante")) {
-                    arrayAttaccantiDeleted.add(arrayAttaccanti.get(spChangeGiocatore.getSelectedItemPosition()));
-                    arrayAttaccanti.remove(spChangeGiocatore.getSelectedItemPosition());
-                    Giocatori = arrayAttaccanti;
+                    if (RuoloSelected.equals("Portiere")) {
+                        arrayPortieriDeleted.add(arrayPortieri.get(spChangeGiocatore.getSelectedItemPosition()));
+                        arrayPortieri.remove(spChangeGiocatore.getSelectedItemPosition());
+                        Giocatori = arrayPortieri;
+                    } else if (RuoloSelected.equals("Difensore")) {
+                        arrayDifensoriDeleted.add(arrayDifensori.get(spChangeGiocatore.getSelectedItemPosition()));
+                        arrayDifensori.remove(spChangeGiocatore.getSelectedItemPosition());
+                        Giocatori = arrayDifensori;
+                    } else if (RuoloSelected.equals("Centrocampista")) {
+                        arrayCentrocampistiDeleted.add(arrayCentrocampisti.get(spChangeGiocatore.getSelectedItemPosition()));
+                        arrayCentrocampisti.remove(spChangeGiocatore.getSelectedItemPosition());
+                        Giocatori = arrayCentrocampisti;
+                    } else if (RuoloSelected.equals("Attaccante")) {
+                        arrayAttaccantiDeleted.add(arrayAttaccanti.get(spChangeGiocatore.getSelectedItemPosition()));
+                        arrayAttaccanti.remove(spChangeGiocatore.getSelectedItemPosition());
+                        Giocatori = arrayAttaccanti;
+                    }
+                    ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
+                    // Specify the layout to use when the list of choices appears
+                    adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    // Apply the adapter to the spinner
+                    spChangeGiocatore.setAdapter(adapterChangeGiocatore);
+
+
+                    Toast.makeText(getApplicationContext(), spChangeGiocatore.getItemAtPosition(spChangeGiocatore.getSelectedItemPosition()).toString(), Toast.LENGTH_LONG).show();
                 }
-                ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
-                // Specify the layout to use when the list of choices appears
-                adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                // Apply the adapter to the spinner
-                spChangeGiocatore.setAdapter(adapterChangeGiocatore);
+                else
+                    Toast.makeText(getApplicationContext(), "Hai già il numero massimo di giocatori in quel ruolo.", Toast.LENGTH_LONG).show();
 
                 pd.dismiss();
-
             }
         });
 
@@ -473,6 +489,7 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onAnimationEnd(Animation animation) {
                                 deleteGiocatore.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                                deleteGiocatore.setVisibility(View.INVISIBLE);
 
                             }
 
@@ -590,8 +607,10 @@ public class MainActivity extends AppCompatActivity
                 spChangeGiocatore.setAdapter(adapterChangeGiocatore);
 
                 updateSquadInfo();
+                refreshSquad(lastSocietaSelected);
 
                 pd.dismiss();
+
 
             }
         });
@@ -759,5 +778,116 @@ public class MainActivity extends AppCompatActivity
         Collections.sort(Giocatori);
     }
 
+    public boolean canAdd(String NomeSocieta, String Ruolo) {
+        List<String> Squadra = FileHelper.ReadFileOutArray(MainActivity.this, NomeSocieta + ".txt");
 
+        ArrayList<String> Portieri = new ArrayList<>();
+        ArrayList<String> Dif = new ArrayList<>();
+        ArrayList<String> Cen = new ArrayList<>();
+        ArrayList<String> Att = new ArrayList<>();
+        float CostoTotale = 0;
+        for (int k = 0; k < Squadra.size(); k++) {
+
+            System.out.println("Riga " + k + " Squadra: " + Squadra.get(k));
+
+            String ruolo = "";
+            String Nome = "";
+            String Costo = "";
+
+            if (Squadra.get(k).indexOf("-") != -1) {
+                ruolo = Squadra.get(k).substring(Squadra.get(k).indexOf("-") + 1, Squadra.get(k).lastIndexOf("-")).trim();
+                Nome = Squadra.get(k).substring(0, Squadra.get(k).indexOf("-")).trim();
+                Costo = Squadra.get(k).substring(Squadra.get(k).lastIndexOf("-") + 1).trim();
+            }
+                /*
+                else
+                {
+                    ruolo = Squadra.get(k).substring(Squadra.get(k).indexOf("   "), Squadra.get(k).lastIndexOf("    ")).trim();
+                    Nome = Squadra.get(k).substring(0, Squadra.get(k).indexOf("   ")).trim();
+                    Costo = Squadra.get(k).substring(Squadra.get(k).lastIndexOf("   ")).trim();
+                }
+                */
+
+            if (ruolo.equals("P")) {
+                Portieri.add(Nome + "   " + ruolo + "   " + Costo);
+            } else if (ruolo.equals("D")) {
+                Dif.add(Nome + "    " + ruolo + "   " + Costo);
+            } else if (ruolo.equals("C")) {
+                Cen.add(Nome + "    " + ruolo + "   " + Costo);
+            } else if (ruolo.equals("A")) {
+                Att.add(Nome + "    " + ruolo + "   " + Costo);
+            }
+            CostoTotale += Float.valueOf(Costo);
+        }
+        if (Ruolo.equals("P") && Portieri.size() < 3 || Ruolo.equals("D") && Dif.size() < 8 || Ruolo.equals("C") && Cen.size() < 8 || Ruolo.equals("A") && Att.size() < 6)
+            return true;
+        else
+            return false;
+    }
+
+    public void refreshSquad(String NomeSocieta)
+    {
+        List<String> Squadra = FileHelper.ReadFileOutArray(MainActivity.this, NomeSocieta+".txt");
+
+        ArrayList<String> Portieri = new ArrayList<>();
+        ArrayList<String> Dif = new ArrayList<>();
+        ArrayList<String> Cen = new ArrayList<>();
+        ArrayList<String> Att = new ArrayList<>();
+        for(int k=0; k<Squadra.size(); k++)
+        {
+            String ruolo = Squadra.get(k).substring(Squadra.get(k).indexOf("-")+1, Squadra.get(k).lastIndexOf("-")).trim();
+            String Nome = Squadra.get(k).substring(0, Squadra.get(k).indexOf("-")).trim();
+            String Costo = Squadra.get(k).substring(Squadra.get(k).lastIndexOf("-")+1).trim();
+            if(ruolo.equals("P"))
+            {
+                Portieri.add(Nome + "   " + "Portiere" + "   " + Costo);
+            }
+            else if(ruolo.equals("D"))
+            {
+                Dif.add(Nome + "   " + "Difensore" + "   " + Costo);
+            }
+            else if(ruolo.equals("C"))
+            {
+                Cen.add(Nome + "   " + "Centrocampista" + "   " + Costo);
+            }
+            else if(ruolo.equals("A"))
+            {
+                Att.add(Nome + "   " + "Attaccante" + "   " + Costo);
+            }
+        }
+
+        List<HashMap<String, String>> listitems = new ArrayList<>();
+        SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, listitems, R.layout.list_item_mini, new String[]{"First Line"}, new int[]{R.id.text1});
+
+        for(int k=0; k<Portieri.size(); k++)
+        {
+            HashMap<String, String> resultMap = new HashMap<>();
+            resultMap.put("First Line", Portieri.get(k));
+            //resultMap.put("Second Line", Portieri.get(k));
+            listitems.add(resultMap);
+        }
+        for(int k=0; k<Dif.size(); k++)
+        {
+            HashMap<String, String> resultMap = new HashMap<>();
+            resultMap.put("First Line", Dif.get(k));
+            //resultMap.put("Second Line", "");
+            listitems.add(resultMap);
+        }
+        for(int k=0; k<Cen.size(); k++)
+        {
+            HashMap<String, String> resultMap = new HashMap<>();
+            resultMap.put("First Line", Cen.get(k));
+            //resultMap.put("Second Line", "");
+            listitems.add(resultMap);
+        }
+        for(int k=0; k<Att.size(); k++)
+        {
+            HashMap<String, String> resultMap = new HashMap<>();
+            resultMap.put("First Line", Att.get(k));
+            //resultMap.put("Second Line", "");
+            listitems.add(resultMap);
+        }
+
+        listSquadra.setAdapter(adapter);
+    }
 }
