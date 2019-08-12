@@ -113,7 +113,7 @@ public class Login extends AppCompatActivity
             }else {
 
                 // Save email_public.txt file to /storage/emulated/0/DCIM folder
-                Toast.makeText(getApplicationContext(), "Save to public external storage success. File Path ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Save to public external storage success. File Path ", Toast.LENGTH_LONG).show();
 
 
 

@@ -2,13 +2,16 @@ package com.example.spara.fantacalciomanager;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,12 +30,14 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements AlertDialogFragment.EditNameDialogListener
 {
 
 
@@ -146,7 +151,6 @@ public class MainActivity extends AppCompatActivity
         // Apply the adapter to the spinner
         spChangeSquadra.setAdapter(adapterChangeSquadra);
 
-
         try {
 
             // Check whether this app has write external storage permission or not.
@@ -180,10 +184,19 @@ public class MainActivity extends AppCompatActivity
 
                 //Carico i giocatori negli array
 
+                /*
                 arrayPortieri = FileHelper.ReadFileOutArray(MainActivity.this, "Portieri.txt");
                 arrayDifensori = FileHelper.ReadFileOutArray(MainActivity.this, "Difensori.txt");
                 arrayCentrocampisti = FileHelper.ReadFileOutArray(MainActivity.this, "Centrocampisti.txt");
                 arrayAttaccanti = FileHelper.ReadFileOutArray(MainActivity.this, "Attaccanti.txt");
+                */
+
+                showLoadingDialog();
+
+                arrayPortieri = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Portieri.txt");
+                arrayDifensori = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Difensori.txt");
+                arrayCentrocampisti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Centrocampisti.txt");
+                arrayAttaccanti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Attaccanti.txt");
 
                 AnalyzePlayerAndSort(arrayPortieri);
                 AnalyzePlayerAndSort(arrayDifensori);
@@ -195,6 +208,7 @@ public class MainActivity extends AppCompatActivity
                 arrayCentrocampistiDeleted = new ArrayList<>();
                 arrayAttaccantiDeleted = new ArrayList<>();
 
+                pd.dismiss();
             }
 
 
@@ -203,6 +217,73 @@ public class MainActivity extends AppCompatActivity
 
             Toast.makeText(getApplicationContext(), "Save to public external storage failed. Error message is " + ex.getMessage(), Toast.LENGTH_LONG).show();
         }
+
+
+
+        spChangeRuolo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int pos, long id) {
+                // An item was selected. You can retrieve the selected item using
+                // parent.getItemAtPosition(pos)
+
+                //Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+
+                String FileName = "";
+                List<String> Giocatori = new ArrayList<>();
+
+                switch (spChangeRuolo.getSelectedItem().toString())
+                {
+                    case "Portiere":
+                        Giocatori = arrayPortieri;
+                        break;
+                    case "Difensore":
+                        Giocatori = arrayDifensori;
+                        break;
+                    case "Centrocampista":
+                        Giocatori = arrayCentrocampisti;
+                        break;
+                    case "Attaccante":
+                        Giocatori = arrayAttaccanti;
+                        break;
+                    default:
+                        Giocatori = new ArrayList<>();
+                }
+
+                /*
+                for(int k=0; k<Giocatori.size(); k++)
+                {
+                    String Squadra = Giocatori.get(k).substring(Giocatori.get(k).lastIndexOf("-")+1);
+                    //Squadra = Squadra.substring(Portieri.lastIndexOf("\t"))
+                    System.out.println(Squadra);
+                    String Giocatore;
+                    if(Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).indexOf(" ") != -1)
+                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).substring(0, Giocatori.get(k).lastIndexOf(" ")+2) + ".";
+                    else
+                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"))+ ".";
+                    /*
+                    if(Giocatore.trim().length() == 2)
+                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"));
+                    *s/
+                    Giocatori.set(k, Giocatore + " (" + Squadra.trim() + ")");
+                }
+                Collections.sort(Giocatori);
+                */
+
+                ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
+                // Specify the layout to use when the list of choices appears
+                adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Apply the adapter to the spinner
+                spChangeGiocatore.setAdapter(adapterChangeGiocatore);
+
+                System.out.println(Giocatori.toString());
+
+            }
+
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Another interface callback
+            }
+        });
 
 
         //ListView Click on Item Event
@@ -303,70 +384,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        spChangeRuolo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int pos, long id) {
-                // An item was selected. You can retrieve the selected item using
-                // parent.getItemAtPosition(pos)
 
-                //Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
-
-                String FileName = "";
-                List<String> Giocatori;
-
-                switch (spChangeRuolo.getSelectedItem().toString())
-                {
-                    case "Portiere":
-                        Giocatori = arrayPortieri;
-                        break;
-                    case "Difensore":
-                        Giocatori = arrayDifensori;
-                        break;
-                    case "Centrocampista":
-                        Giocatori = arrayCentrocampisti;
-                        break;
-                    case "Attaccante":
-                        Giocatori = arrayAttaccanti;
-                        break;
-                    default:
-                        Giocatori = null;
-                }
-
-                /*
-                for(int k=0; k<Giocatori.size(); k++)
-                {
-                    String Squadra = Giocatori.get(k).substring(Giocatori.get(k).lastIndexOf("-")+1);
-                    //Squadra = Squadra.substring(Portieri.lastIndexOf("\t"))
-                    System.out.println(Squadra);
-                    String Giocatore;
-                    if(Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).indexOf(" ") != -1)
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).substring(0, Giocatori.get(k).lastIndexOf(" ")+2) + ".";
-                    else
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"))+ ".";
-                    /*
-                    if(Giocatore.trim().length() == 2)
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"));
-                    *s/
-                    Giocatori.set(k, Giocatore + " (" + Squadra.trim() + ")");
-                }
-                Collections.sort(Giocatori);
-                */
-
-                ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
-                // Specify the layout to use when the list of choices appears
-                adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                // Apply the adapter to the spinner
-                spChangeGiocatore.setAdapter(adapterChangeGiocatore);
-
-                System.out.println(Giocatori.toString());
-
-            }
-
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Another interface callback
-            }
-        });
 
         addGiocatore.setOnClickListener(new View.OnClickListener() {
             //@Override
@@ -457,7 +475,7 @@ public class MainActivity extends AppCompatActivity
                     spChangeGiocatore.setAdapter(adapterChangeGiocatore);
 
 
-                    Toast.makeText(getApplicationContext(), spChangeGiocatore.getItemAtPosition(spChangeGiocatore.getSelectedItemPosition()).toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), spChangeGiocatore.getItemAtPosition(spChangeGiocatore.getSelectedItemPosition()).toString(), Toast.LENGTH_SHORT).show();
                 }
                 else
                     Toast.makeText(getApplicationContext(), "Hai già il numero massimo di giocatori in quel ruolo.", Toast.LENGTH_LONG).show();
@@ -647,16 +665,16 @@ public class MainActivity extends AppCompatActivity
                         animation1.setDuration(2000);
                         v.startAnimation(animation1);                    }
                 });
+                //openFolder();
+                showAlertDialog();
 
-                Toast toast = Toast.makeText(getApplicationContext(), "Per sempre membro della famiglia del FantaFinando", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                LinearLayout toastContentView = (LinearLayout) toast.getView();
-                ImageView imageView = new ImageView(getApplicationContext());
-                imageView.setImageResource(R.drawable.ottavio);
-                toastContentView.addView(imageView, 0);
-                toast.show();
+                /*
+                finish();
+                System.exit(0);
+                */
             }
         });
+
 
 
     }
@@ -755,6 +773,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void openFolder()
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        System.out.println(FileHelper.getPath());
+        Uri uri = Uri.parse(FileHelper.getPath());
+        intent.setDataAndType(uri, "text/csv");
+        startActivity(Intent.createChooser(intent, "Open folder"));
+    }
 
     public void AnalyzePlayerAndSort(List<String> Giocatori)
     {
@@ -890,4 +916,26 @@ public class MainActivity extends AppCompatActivity
 
         listSquadra.setAdapter(adapter);
     }
+
+    private void showAlertDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        AlertDialogFragment alertDialog = AlertDialogFragment.newInstance("Congratulazioni per la tua asta.");
+        alertDialog.show(fm, "fragment_alert");
+    }
+
+    @Override
+    public void onFinishEditDialog(String inputText) {
+        //Toast.makeText(this, "Hi, " + inputText, Toast.LENGTH_SHORT).show();
+        if(inputText.equals("Ok"))
+        {
+            finish();
+            System.exit(0);
+        }
+
+    }
+
+
+
+
+
 }

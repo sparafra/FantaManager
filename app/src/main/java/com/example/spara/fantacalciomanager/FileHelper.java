@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +20,7 @@ import java.util.ArrayList;
  */
 public class FileHelper {
     //final static String fileName = "Portieri.txt";
-    static String path = "" ;
+    static String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/FantaFinando/";
     final static String TAG = FileHelper.class.getName();
 
 
@@ -127,5 +129,34 @@ public class FileHelper {
         }
         return  false;
     }
+
+    public static ArrayList<String> downloadFromUrl(final String urlWebService) {
+
+        try {
+            String line = null;
+            ArrayList<String> array = new ArrayList<>();
+            URL url = new URL(urlWebService);
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ( (line = bufferedReader.readLine()) != null )
+            {
+                stringBuilder.append(line + System.getProperty("line.separator"));
+                array.add(line);
+            }
+            line = stringBuilder.toString();
+
+            bufferedReader.close();
+            return array;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    public static String getPath(){return path;}
 
 }
