@@ -474,6 +474,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
                     // Apply the adapter to the spinner
                     spChangeGiocatore.setAdapter(adapterChangeGiocatore);
 
+                    editCosto.setText("1");
 
                     Toast.makeText(getApplicationContext(), spChangeGiocatore.getItemAtPosition(spChangeGiocatore.getSelectedItemPosition()).toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -727,7 +728,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
             ArrayList<String> Dif = new ArrayList<>();
             ArrayList<String> Cen = new ArrayList<>();
             ArrayList<String> Att = new ArrayList<>();
-            float CostoTotale = 0;
+            int CostoTotale = 0;
             for (int k = 0; k < Squadra.size(); k++) {
 
                 System.out.println("Riga " + k + " Squadra: " + Squadra.get(k));
@@ -759,7 +760,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
                 } else if (ruolo.equals("A")) {
                     Att.add(Nome + "    " + ruolo + "   " + Costo);
                 }
-                CostoTotale += Float.valueOf(Costo);
+                CostoTotale += Integer.valueOf(Costo);
             }
             String Data = "Crediti: " + (Crediti-CostoTotale) + "   " + "P: " + Portieri.size() +"/3" + "   " + "D: " + Dif.size() +"/8" + "    " + "C: " + Cen.size() +"/8" + "    " + "A: " + Att.size() + "/6";
 

@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#171a1f</color>
-    <color name="colorAccent">#ed6767</color>
-    <color name="TransparentColor">#e6212121</color>
+    <color name="colorAccent">#F0AA86</color>
+    <color name="TransparentColor">#E6212121</color>
     <color name="Grey">#e6212121</color>
     <drawable name="White">#ffffffff</drawable>
     <drawable name="Grey">#CCCCCCCC</drawable>
