@@ -229,55 +229,38 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
                 //Toast.makeText(getApplicationContext(), parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
 
-                String FileName = "";
-                List<String> Giocatori = new ArrayList<>();
+                try {
+                    String FileName = "";
+                    List<String> Giocatori = new ArrayList<>();
 
-                switch (spChangeRuolo.getSelectedItem().toString())
-                {
-                    case "Portiere":
-                        Giocatori = arrayPortieri;
-                        break;
-                    case "Difensore":
-                        Giocatori = arrayDifensori;
-                        break;
-                    case "Centrocampista":
-                        Giocatori = arrayCentrocampisti;
-                        break;
-                    case "Attaccante":
-                        Giocatori = arrayAttaccanti;
-                        break;
-                    default:
-                        Giocatori = new ArrayList<>();
-                }
+                    if (arrayPortieri != null && arrayDifensori != null && arrayCentrocampisti != null && arrayAttaccanti != null) {
+                        switch (spChangeRuolo.getSelectedItem().toString()) {
+                            case "Portiere":
+                                Giocatori = arrayPortieri;
+                                break;
+                            case "Difensore":
+                                Giocatori = arrayDifensori;
+                                break;
+                            case "Centrocampista":
+                                Giocatori = arrayCentrocampisti;
+                                break;
+                            case "Attaccante":
+                                Giocatori = arrayAttaccanti;
+                                break;
+                            default:
+                                Giocatori = new ArrayList<>();
+                        }
+                    }
 
-                /*
-                for(int k=0; k<Giocatori.size(); k++)
-                {
-                    String Squadra = Giocatori.get(k).substring(Giocatori.get(k).lastIndexOf("-")+1);
-                    //Squadra = Squadra.substring(Portieri.lastIndexOf("\t"))
-                    System.out.println(Squadra);
-                    String Giocatore;
-                    if(Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).indexOf(" ") != -1)
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).substring(0, Giocatori.get(k).lastIndexOf(" ")+2) + ".";
-                    else
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"))+ ".";
-                    /*
-                    if(Giocatore.trim().length() == 2)
-                        Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"));
-                    *s/
-                    Giocatori.set(k, Giocatore + " (" + Squadra.trim() + ")");
-                }
-                Collections.sort(Giocatori);
-                */
 
-                ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
-                // Specify the layout to use when the list of choices appears
-                adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                // Apply the adapter to the spinner
-                spChangeGiocatore.setAdapter(adapterChangeGiocatore);
+                    ArrayAdapter<String> adapterChangeGiocatore = new ArrayAdapter<String>(MainActivity.this, R.layout.row, Giocatori);
+                    // Specify the layout to use when the list of choices appears
+                    adapterChangeGiocatore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    // Apply the adapter to the spinner
+                    spChangeGiocatore.setAdapter(adapterChangeGiocatore);
 
-                System.out.println(Giocatori.toString());
-
+                    System.out.println(Giocatori.toString());
+                }catch (Exception e){System.out.println(e.toString());}
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
