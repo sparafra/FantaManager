@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
         // Apply the adapter to the spinner
         spChangeSquadra.setAdapter(adapterChangeSquadra);
 
-        try {
+        try{
 
             // Check whether this app has write external storage permission or not.
             int writeExternalStoragePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -193,10 +193,10 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
                 showLoadingDialog();
 
-                arrayPortieri = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Portieri.txt");
-                arrayDifensori = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Difensori.txt");
-                arrayCentrocampisti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Centrocampisti.txt");
-                arrayAttaccanti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Attaccanti.txt");
+                arrayPortieri = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Final/Portieri.txt");
+                arrayDifensori = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Final/Difensori.txt");
+                arrayCentrocampisti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Final/Centrocampisti.txt");
+                arrayAttaccanti = FileHelper.downloadFromUrl("http://francescosparano.me/FantaFinando/Final/Attaccanti.txt");
 
                 AnalyzePlayerAndSort(arrayPortieri);
                 AnalyzePlayerAndSort(arrayDifensori);
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
         }catch (Exception ex)
         {
-
+            System.out.println(ex.toString());
             Toast.makeText(getApplicationContext(), "Save to public external storage failed. Error message is " + ex.getMessage(), Toast.LENGTH_LONG).show();
         }
 
@@ -771,18 +771,24 @@ public class MainActivity extends AppCompatActivity implements AlertDialogFragme
 
         for(int k=0; k<Giocatori.size(); k++)
         {
-            String Squadra = Giocatori.get(k).substring(Giocatori.get(k).lastIndexOf("-")+1);
+            //String Squadra = Giocatori.get(k).substring(Giocatori.get(k).lastIndexOf("-")+1);
+            String Squadra = Giocatori.get(k).substring(Giocatori.get(k).indexOf("-")+1,Giocatori.get(k).lastIndexOf("-") );
+
             //Squadra = Squadra.substring(Portieri.lastIndexOf("\t"))
             System.out.println(Squadra);
             String Giocatore;
+            /*
             if(Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).indexOf(" ") != -1)
                 Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-")).substring(0, Giocatori.get(k).lastIndexOf(" ")+2) + ".";
             else
                 Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"))+ ".";
+            */
+
                     /*
                     if(Giocatore.trim().length() == 2)
                         Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"));
                     */
+            Giocatore = Giocatori.get(k).substring(0, Giocatori.get(k).indexOf("-"));
             Giocatori.set(k, Giocatore + " (" + Squadra.trim() + ")");
         }
         Collections.sort(Giocatori);
